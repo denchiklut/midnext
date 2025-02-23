@@ -26,7 +26,7 @@ export async function middleware(request: Request) {
       req.cookies.set('req-c-1', '1')
       req.headers.set('req-h-1', '1')
     })
-    .use((req, res) => {
+    .use(async (req, res) => {
       res.cookies.set('res-c-1', '2')
       res.headers.set('res-h-1', '2')
     })
@@ -67,7 +67,6 @@ Returning `EdgeResponse.redirect` will immediately stop further middleware execu
 ```typescript
 // middleware.ts
 import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
-import join from 'url-join'
 
 export async function middleware(request: Request) {
   return new NextUse(request)
@@ -89,7 +88,6 @@ To override the response with JSON, use `EdgeResponse.json`. Like a redirect, th
 ```typescript
 // middleware.ts
 import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
-import join from 'url-join'
 
 export async function middleware(request: Request) {
   return new NextUse(request)
@@ -142,11 +140,25 @@ declare module 'midnext' {
 ```
 
 ## API
-Both `EdgeRequest` and `EdgeResponse` extend the standard Web Request and Response objects, meaning they support all their default properties and methods. 
-Below, we list only the additional properties introduced by midnext.
+The `NextUse` class provides a middleware management system similar to Express, allowing sequential execution of middleware functions.
+- The **middleware** receives `EdgeRequest` and `EdgeResponse` as arguments and can modify them or return an `EdgeResponse.redirect`\|`EdgeResponse.json` to terminate execution early.
+- Both `EdgeRequest` and `EdgeResponse` extend the standard Web Request and Response objects, meaning they support all their default properties and methods.
+
+  Below, we list only the additional properties introduced by midnext.
+
+### NextUse Properties
+| Constructor                                   | Description                                                                                                                                                        |
+|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| new NextUse(req: Request, res?: EdgeResponse) | Initializes a new instance of `NextUse`, wrapping the incoming request in an `EdgeRequest` and setting an initial `EdgeResponse` (defaults to EdgeResponse.next()) |
+
+
+| Method                      | Description                                                                                                               |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| use(middleware: Middleware) | Adds a middleware function to the execution stack. The middleware receives `EdgeRequest` and `EdgeResponse` as arguments. |
+| run()                       | Executes the middleware stack in sequence, handling redirects, rewrites, and response finalization.                       |
+
 
 ### EdgeRequest Properties
-
 | Property | Description                                                                                                |
 |----------|------------------------------------------------------------------------------------------------------------|
 | cookies  | Manages request cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |
