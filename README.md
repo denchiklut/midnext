@@ -23,12 +23,12 @@ import { NextUse } from 'midnext'
 export async function middleware(request: Request) {
   return new NextUse(request)
   .use((req, res) => {
-  req.cookies.set('req-c-1', '1')
-  req.headers.set('req-h-1', '1')
+    req.cookies.set('req-c-1', '1')
+    req.headers.set('req-h-1', '1')
   })
   .use((req, res) => {
-  res.cookies.set('res-c-1', '2')
-  res.headers.set('res-h-1', '2')
+    res.cookies.set('res-c-1', '2')
+    res.headers.set('res-h-1', '2')
   })
   .run()
 }
@@ -47,13 +47,13 @@ import join from 'url-join'
 export async function middleware(request: Request) {
   return new NextUse(request)
   .use((req: EdgeRequest, res: EdgeResponse) => {
-  const url = new URL(req.url)
-  url.pathname = join('test', url.pathname)  
+    const url = new URL(req.url)
+    url.pathname = join('test', url.pathname)  
   
-  return EdgeResponse.rewrite(url)
+    return EdgeResponse.rewrite(url)
   })
   .use((req, res) => {
-  // Here, req.url's pathname starts with `test` due to the rewrite above
+    // Here, req.url's pathname starts with `test` due to the rewrite above
   })
   .run()
 }
@@ -72,13 +72,13 @@ import join from 'url-join'
 export async function middleware(request: Request) {
   return new NextUse(request)
   .use((req: EdgeRequest, res: EdgeResponse) => {
-  req.cookies.set('req-c-1', '1')
-  req.headers.set('req-h-1', '1')
+    req.cookies.set('req-c-1', '1')
+    req.headers.set('req-h-1', '1')
   
-  return EdgeResponse.redirect('http://test.com')
+    return EdgeResponse.redirect('http://test.com')
   })
   .use((req, res) => {
-  // This middleware won't be executed since the redirect was returned above
+    // This middleware won't be executed since the redirect was returned above
   })
   .run()
 }
@@ -97,10 +97,10 @@ import join from 'url-join'
 export async function middleware(request: Request) {
   return new NextUse(request)
   .use((req: EdgeRequest, res: EdgeResponse) => {
-  return EdgeResponse.json({ hello: 'world!' })
+    return EdgeResponse.json({ hello: 'world!' })
   })
   .use((req, res) => {
-  // This middleware won't be executed since the JSON response was returned above
+    // This middleware won't be executed since the JSON response was returned above
   })
   .run()
 }
@@ -118,12 +118,12 @@ import { NextUse }  from 'midnext'
 export async function middleware(request: NextRequest) {
   return new NextUse(request)
   .use((req, res) => {
-  req.data.isBot = false;
-  req.data.printHello = () => console.log('hello');
+    req.data.isBot = false;
+    req.data.printHello = () => console.log('hello');
   })
   .use((req) => {
-  console.log(req.data.isBot);
-  req.data.printHello();
+    console.log(req.data.isBot);
+    req.data.printHello();
   })
   .run();
 }
