@@ -1,6 +1,6 @@
 {
 	"name": "midnext",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/denchiklut/midnext"
@@ -15,8 +15,7 @@
 	"scripts": {
 		"build": "rm -rf dist && NODE_ENV=production && node esbuild.mjs",
 		"format": "prettier --write \"src/**/*.{ts,tsx}\"",
-		"lint": "eslint --fix --quiet ./",
-		"postinstall": "husky"
+		"lint": "eslint --fix --quiet ./"
 	},
 	"dependencies": {
 		"@edge-runtime/cookies": "^6.0.0",
