@@ -46,24 +46,25 @@ export const config = {}
 
 ## Rewrites
 
-To rewrite a request, return `EdgeResponse.rewrite`. The next middleware will receive the `updated` request with the
+To rewrite a request, return `res.rewrite` from the middleware. The next middleware will receive the `updated` request with the
 rewritten pathname.
 
 ```typescript
 // middleware.ts
-import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
+import { NextUse } from 'midnext'
 import join from 'url-join'
 
 export async function middleware(request: Request) {
   return new NextUse(request)
-    .use((req: EdgeRequest, res: EdgeResponse) => {
+    .use((req, res) => {
       const url = new URL(req.url)
       url.pathname = join('test', url.pathname)
 
-      return EdgeResponse.rewrite(url)
+      return res.rewrite(url)
     })
     .use((req, res) => {
       // Here, req.url's pathname starts with `test` due to the rewrite above
+      console.log(req.edgeUrl.pathname)
     })
     .run()
 }
@@ -73,7 +74,7 @@ export const config = {}
 
 ## Redirects
 
-Returning `EdgeResponse.redirect` will immediately stop further middleware execution and perform a redirect.
+Returning `res.redirect` will immediately stop further middleware execution and perform a redirect.
 
 ```typescript
 // middleware.ts
@@ -82,7 +83,7 @@ import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
 export async function middleware(request: Request) {
   return new NextUse(request)
     .use((req: EdgeRequest, res: EdgeResponse) => {
-      return EdgeResponse.redirect('http://test.com')
+      return res.redirect('http://example.com')
     })
     .use((req, res) => {
       // This middleware won't be executed since the redirect was returned above
@@ -93,9 +94,9 @@ export async function middleware(request: Request) {
 export const config = {}
 ```
 
-## JSON
+## Response
 
-To override the response with JSON, use `EdgeResponse.json`. Like a redirect, this prevents further middleware
+You can respond from Middleware directly by returning a Response. Like a redirect, this prevents further middleware
 execution.
 
 ```typescript
@@ -105,29 +106,7 @@ import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
 export async function middleware(request: Request) {
   return new NextUse(request)
     .use((req: EdgeRequest, res: EdgeResponse) => {
-      return EdgeResponse.json({hello: 'world!'})
-    })
-    .use((req, res) => {
-      // This middleware won't be executed since the JSON response was returned above
-    })
-    .run()
-}
-
-export const config = {}
-```
-
-## Response
-
-You can respond from Middleware directly by returning a Response
-
-```typescript
-// middleware.ts
-import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
-
-export async function middleware(request: Request) {
-  return new NextUse(request)
-    .use((req: EdgeRequest, res: EdgeResponse) => {
-      return new Response('ok')
+      return Response.json({ message: 'ok' })
     })
     .use((req, res) => {
       // This middleware won't be executed since the response was returned above
@@ -181,8 +160,8 @@ declare module 'midnext' {
 The `NextUse` class provides a middleware management system similar to Express, allowing sequential execution of
 middleware functions.
 
-- The **middleware** receives `EdgeRequest` and `EdgeResponse` as arguments and can modify them or return an
-  `EdgeResponse.redirect`\|`EdgeResponse.json` to terminate execution early.
+- The **middleware** receives `EdgeRequest` and `EdgeResponse` as arguments allowing you to modify both request and response.
+  you can stop further middleware execution by returning a Response object from the middleware (`new Response()`, `Response.json()`, `res.redirect(url)`)
 - Both `EdgeRequest` and `EdgeResponse` extend the standard Web Request and Response objects, meaning they support all
   their default properties and methods.
 
@@ -214,4 +193,3 @@ middleware functions.
 | cookies  | Manages response cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |
 | rewrite  | Rewrites the request URL and `continues` middleware execution with the updated request.                     |
 | redirect | Redirects to a new URL and halts further middleware execution.                                              |
-| json     | Sends a JSON response and halts further middleware execution.                                               |
