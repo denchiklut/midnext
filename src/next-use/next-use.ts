@@ -1,12 +1,13 @@
-import { EdgeRequest, EdgeResponse } from '../edge'
 import type { Middleware } from './types'
+import { EdgeRequest, EdgeResponse } from '../edge'
+import { next, rewrite } from '../edge/utils'
 
 export class NextUse {
 	private readonly middlewares: Array<Middleware> = []
 	private req: EdgeRequest
 	private res: EdgeResponse
 
-	constructor(req: Request, res = EdgeResponse.next()) {
+	constructor(req: Request, res = next()) {
 		this.req = new EdgeRequest(req, req)
 		this.res = res
 	}
@@ -31,21 +32,18 @@ export class NextUse {
 			if (isRedirect) return res
 
 			if (isRewrite) {
-				const rewrite = EdgeResponse.rewrite(isRewrite, {
+				const rewResponse = rewrite(isRewrite, {
 					request: this.req,
 					headers: [...this.res.headers, ...res.headers]
 				})
 
-				this.req = EdgeRequest.fromRewrite(rewrite, this.req.data)
-				this.res = rewrite
+				this.req = EdgeRequest.fromRewrite(rewResponse, this.req.data)
+				this.res = rewResponse
 			} else {
 				return res
 			}
 		}
 
-		return EdgeResponse.next({
-			request: this.req,
-			headers: this.res.headers
-		})
+		return next({ request: this.req, headers: this.res.headers })
 	}
 }

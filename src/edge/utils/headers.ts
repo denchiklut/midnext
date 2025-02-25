@@ -1,9 +1,6 @@
-import { ExtraResponseInit } from './types'
+import type { ExtraResponseInit } from '../types'
 
-export function wrapHeaders(
-	init: ExtraResponseInit | undefined,
-	headers: Headers
-) {
+export function wrapHeaders(init: ExtraResponseInit | undefined, headers: Headers) {
 	if (!init?.request?.headers) return
 
 	if (!(init.request.headers instanceof Headers)) {

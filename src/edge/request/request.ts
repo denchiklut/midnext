@@ -1,7 +1,7 @@
 import invariant from 'tiny-invariant'
 import { RequestCookies } from '@edge-runtime/cookies'
-import type { EdgeResponse } from './response'
-import { unwrapHeaders } from './utils'
+import type { EdgeResponse } from '../response'
+import { unwrapHeaders } from '../utils'
 
 const INTERNALS = Symbol('edge internal request')
 
@@ -13,10 +13,7 @@ export class EdgeRequest extends Request {
 	}
 
 	constructor(input: URL | RequestInfo, init = {}) {
-		const url =
-			typeof input !== 'string' && 'url' in input
-				? input.url
-				: String(input)
+		const url = typeof input !== 'string' && 'url' in input ? input.url : String(input)
 
 		if (input instanceof Request) {
 			super(input, init)
