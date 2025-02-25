@@ -169,9 +169,9 @@ middleware functions.
 
 ### NextUse Properties
 
-| Constructor                                   | Description                                                                                                                                                        |
-|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| new NextUse(req: Request, res?: EdgeResponse) | Initializes a new instance of `NextUse`, wrapping the incoming request in an `EdgeRequest` and setting an initial `EdgeResponse` (defaults to EdgeResponse.next()) |
+| Constructor                                                          | Description                                                                                                                      |
+|----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| new NextUse(req: Request\|NextRequest, res?: NextResponse\|Response) | Initializes a new instance of `NextUse`, wrapping the incoming request in an `EdgeRequest` and setting an initial `EdgeResponse` |
 
 | Method                      | Description                                                                                                               |
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------------|
