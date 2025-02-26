@@ -64,7 +64,7 @@ export async function middleware(request: Request) {
     })
     .use((req, res) => {
       // Here, req.url's pathname starts with `test` due to the rewrite above
-      console.log(req.edgeUrl.pathname)
+      console.log(req.parsedUrl.pathname)
     })
     .run()
 }
@@ -180,11 +180,11 @@ middleware functions.
 
 ### EdgeRequest Properties
 
-| Property | Description                                                                                                |
-|----------|------------------------------------------------------------------------------------------------------------|
-| cookies  | Manages request cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |
-| edgeUrl  | Provides the parsed URL object of the request.                                                             |
-| data     | Stores shared data across middleware functions. Can hold any type, including functions.                    |
+| Property  | Description                                                                                                |
+|-----------|------------------------------------------------------------------------------------------------------------|
+| cookies   | Manages request cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |
+| parsedUrl | Provides the parsed URL object of the request.                                                             |
+| data      | Stores shared data across middleware functions. Can hold any type, including functions.                    |
 
 ### EdgeResponse Properties
 
