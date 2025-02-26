@@ -1,24 +1,30 @@
+import { pathToRegexp } from 'path-to-regexp'
 import type { Middleware } from './types'
 import { EdgeRequest, EdgeResponse } from '../edge'
 import { next } from '../edge/utils'
 
 export class NextUse {
-	private readonly middlewares: Array<Middleware> = []
 	private req: EdgeRequest
 	private readonly res: EdgeResponse
+	private readonly middlewares: { regexp?: RegExp; middleware: Middleware }[] = []
 
 	constructor(req: Request, res = next()) {
 		this.req = new EdgeRequest(req, req)
 		this.res = res
 	}
 
-	public use(middleware: Middleware) {
-		this.middlewares.push(middleware)
+	public use(pathOrMiddleware: string | Middleware, ...middlewares: Middleware[]) {
+		const regexp = typeof pathOrMiddleware === 'function' ? /.*/ : pathToRegexp(pathOrMiddleware).regexp
+		const middlewareList = typeof pathOrMiddleware === 'function' ? [pathOrMiddleware, ...middlewares] : middlewares
+		this.middlewares.push(...middlewareList.map(middleware => ({ regexp, middleware })))
+
 		return this
 	}
 
 	public async run() {
-		for (const middleware of this.middlewares) {
+		for (const { regexp, middleware } of this.middlewares) {
+			if (!regexp?.test(this.req.parsedUrl.pathname)) continue
+
 			const res = await middleware(this.req, this.res)
 
 			if (!(res instanceof Response)) continue

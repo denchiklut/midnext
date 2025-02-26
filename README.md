@@ -34,7 +34,7 @@ export async function middleware(request: Request) {
       req.cookies.set('req-c-1', '1')
       req.headers.set('req-h-1', '1')
     })
-    .use(async (req, res) => {
+    .use('/test', async (req, res) => {
       res.cookies.set('res-c-1', '2')
       res.headers.set('res-h-1', '2')
     })
@@ -173,10 +173,10 @@ middleware functions.
 |----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | new NextUse(req: Request\|NextRequest, res?: NextResponse\|Response) | Initializes a new instance of `NextUse`, wrapping the incoming request in an `EdgeRequest` and setting an initial `EdgeResponse` |
 
-| Method                      | Description                                                                                                               |
-|-----------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| use(middleware: Middleware) | Adds a middleware function to the execution stack. The middleware receives `EdgeRequest` and `EdgeResponse` as arguments. |
-| run()                       | Executes the middleware stack in sequence, handling redirects, rewrites, and response finalization.                       |
+| Method                                                            | Description                                                                                                               |
+|-------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| use(pathOrMiddleware: string\|Middleware, middleware: Middleware) | Adds a middleware function to the execution stack. The middleware receives `EdgeRequest` and `EdgeResponse` as arguments. |
+| run()                                                             | Executes the middleware stack in sequence, handling redirects, rewrites, and response finalization.                       |
 
 ### EdgeRequest Properties
 
