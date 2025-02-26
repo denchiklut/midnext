@@ -1,7 +1,4 @@
-import invariant from 'tiny-invariant'
 import { RequestCookies } from '@edge-runtime/cookies'
-import type { EdgeResponse } from '../response'
-import { unwrapHeaders } from '../utils'
 
 const INTERNALS = Symbol('edge internal request')
 
@@ -42,18 +39,6 @@ export class EdgeRequest extends Request {
 
 	get edgeUrl() {
 		return this[INTERNALS].edgeUrl
-	}
-
-	static fromRewrite(response: EdgeResponse, data = {}) {
-		const rewrite = response.headers.get('x-middleware-rewrite')
-		invariant(rewrite, 'response must a rewrite')
-
-		const request = new EdgeRequest(rewrite, {
-			headers: unwrapHeaders(response.headers)
-		})
-		request.data = data as EdgeRequest.Data
-
-		return request
 	}
 }
 

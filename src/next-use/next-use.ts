@@ -1,11 +1,11 @@
 import type { Middleware } from './types'
 import { EdgeRequest, EdgeResponse } from '../edge'
-import { next, rewrite } from '../edge/utils'
+import { next } from '../edge/utils'
 
 export class NextUse {
 	private readonly middlewares: Array<Middleware> = []
 	private req: EdgeRequest
-	private res: EdgeResponse
+	private readonly res: EdgeResponse
 
 	constructor(req: Request, res = next()) {
 		this.req = new EdgeRequest(req, req)
@@ -24,21 +24,19 @@ export class NextUse {
 			if (!(res instanceof Response)) continue
 
 			const isRedirect = [301, 302, 303, 307, 308].includes(res.status)
-			const isRewrite = res.headers.get('x-middleware-rewrite')
+			const rewrite = res.headers.get('x-middleware-rewrite')
 			const isNext = res.headers.has('x-middleware-next')
 
 			if (isNext) continue
 
 			if (isRedirect) return res
 
-			if (isRewrite) {
-				const rewResponse = rewrite(isRewrite, {
-					request: this.req,
-					headers: [...this.res.headers, ...res.headers]
-				})
+			if (rewrite) {
+				const req = new EdgeRequest(rewrite, this.req)
+				req.data = this.req.data
 
-				this.req = EdgeRequest.fromRewrite(rewResponse, this.req.data)
-				this.res = rewResponse
+				this.req = req
+				this.res.headers.set('x-middleware-rewrite', rewrite)
 			} else {
 				return res
 			}

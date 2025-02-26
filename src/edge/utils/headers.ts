@@ -15,14 +15,3 @@ export function wrapHeaders(init: ExtraResponseInit | undefined, headers: Header
 
 	headers.set('x-middleware-override-headers', keys.join(','))
 }
-
-export function unwrapHeaders(headers: Headers) {
-	const res = new Headers()
-
-	for (const [key, value] of headers) {
-		if (key == 'x-middleware-override-headers') continue
-		res.set(key.replace('x-middleware-request-', ''), value)
-	}
-
-	return res
-}
