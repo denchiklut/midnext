@@ -5,7 +5,7 @@ const INTERNALS = Symbol('edge internal request')
 export class EdgeRequest extends Request {
 	private [INTERNALS]: {
 		cookies: RequestCookies
-		edgeUrl: URL
+		parsedUrl: URL
 		data: EdgeRequest.Data
 	}
 
@@ -20,7 +20,7 @@ export class EdgeRequest extends Request {
 
 		this[INTERNALS] = {
 			cookies: new RequestCookies(this.headers),
-			edgeUrl: new URL(url),
+			parsedUrl: new URL(url),
 			data: {} as EdgeRequest.Data
 		}
 	}
@@ -37,8 +37,8 @@ export class EdgeRequest extends Request {
 		return this[INTERNALS].cookies
 	}
 
-	get edgeUrl() {
-		return this[INTERNALS].edgeUrl
+	get parsedUrl() {
+		return this[INTERNALS].parsedUrl
 	}
 }
 
