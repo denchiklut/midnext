@@ -1,7 +1,8 @@
+import invariant from 'tiny-invariant'
 import { ResponseCookies } from '@edge-runtime/cookies'
-import { redirect, rewrite } from '../utils/functions'
+import { rewrite } from '@vercel/edge'
 
-const INTERNALS = Symbol('edge internal response')
+const INTERNALS = Symbol('midnext response')
 
 export class EdgeResponse<Body = unknown> extends Response {
 	private [INTERNALS]: {
@@ -22,10 +23,24 @@ export class EdgeResponse<Body = unknown> extends Response {
 	}
 
 	public rewrite(destination: string | URL) {
-		return rewrite(destination)
+		return EdgeResponse.from(rewrite(destination))
 	}
 
 	public redirect(url: string | URL, init?: number | ResponseInit) {
-		return redirect(url, init)
+		const status = typeof init === 'number' ? init : (init?.status ?? 307)
+		invariant(
+			[301, 302, 303, 307, 308].includes(status),
+			'Failed to execute "redirect" on "response": Invalid status code'
+		)
+
+		const initObj = typeof init === 'object' ? init : {}
+		const headers = new Headers(initObj?.headers)
+		headers.set('Location', String(url))
+
+		return new EdgeResponse(null, { ...initObj, headers, status })
+	}
+
+	static from(response: Response) {
+		return new EdgeResponse(response.body, response)
 	}
 }

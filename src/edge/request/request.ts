@@ -1,6 +1,6 @@
 import { RequestCookies } from '@edge-runtime/cookies'
 
-const INTERNALS = Symbol('edge internal request')
+const INTERNALS = Symbol('midnext request')
 
 export class EdgeRequest extends Request {
 	private [INTERNALS]: {

@@ -169,14 +169,14 @@ middleware functions.
 
 ### NextUse Properties
 
-| Constructor                                                          | Description                                                                                                                      |
-|----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| new NextUse(req: Request\|NextRequest, res?: NextResponse\|Response) | Initializes a new instance of `NextUse`, wrapping the incoming request in an `EdgeRequest` and setting an initial `EdgeResponse` |
+| Constructor                                                                | Description                                                                                                                      |
+|----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| new NextUse({ request: Request, response?: Response, event?: FetchEvent }) | Initializes a new instance of `NextUse`, wrapping the incoming request in an `EdgeRequest` and setting an initial `EdgeResponse` |
 
-| Method                                                            | Description                                                                                                               |
-|-------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| use(pathOrMiddleware: string\|Middleware, middleware: Middleware) | Adds a middleware function to the execution stack. The middleware receives `EdgeRequest` and `EdgeResponse` as arguments. |
-| run()                                                             | Executes the middleware stack in sequence, handling redirects, rewrites, and response finalization.                       |
+| Method                                                   | Description                                                                                                               |
+|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| use(input: string \| Middleware, middleware: Middleware) | Adds a middleware function to the execution stack. The middleware receives `EdgeRequest` and `EdgeResponse` as arguments. |
+| run()                                                    | Executes the middleware stack in sequence, handling redirects, rewrites, and response finalization.                       |
 
 ### EdgeRequest Properties
 

@@ -8,5 +8,5 @@ export type Middleware<E = never> = (
 	event: E
 ) => Promise<MiddlewareResult> | MiddlewareResult
 
-export type Props<E> = { request: Request; response?: EdgeResponse; event?: E }
+export type Props<E> = { request: Request; response?: Response; event?: E }
 export type Middlewares<E> = { regexp: RegExp; middleware: Middleware<E> }[]
