@@ -28,13 +28,13 @@ synchronous or asynchronous, allowing flexibility in handling requests.
 // middleware.ts
 import { NextUse } from 'midnext'
 
-export async function middleware(request: Request) {
-  return new NextUse(request)
+export async function middleware(request: NextRequest, event: NextEvent) {
+  return new NextUse({ request, event })
     .use((req, res) => {
       req.cookies.set('req-c-1', '1')
       req.headers.set('req-h-1', '1')
     })
-    .use('/test', async (req, res) => {
+    .use('/test', async (req, res, event) => {
       res.cookies.set('res-c-1', '2')
       res.headers.set('res-h-1', '2')
     })
@@ -55,7 +55,7 @@ import { NextUse } from 'midnext'
 import join from 'url-join'
 
 export async function middleware(request: Request) {
-  return new NextUse(request)
+  return new NextUse({ request })
     .use((req, res) => {
       const url = new URL(req.url)
       url.pathname = join('test', url.pathname)
@@ -81,7 +81,7 @@ Returning `res.redirect` will immediately stop further middleware execution and 
 import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
 
 export async function middleware(request: Request) {
-  return new NextUse(request)
+  return new NextUse({ request })
     .use((req: EdgeRequest, res: EdgeResponse) => {
       return res.redirect('http://example.com')
     })
@@ -104,7 +104,7 @@ execution.
 import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
 
 export async function middleware(request: Request) {
-  return new NextUse(request)
+  return new NextUse({ request })
     .use((req: EdgeRequest, res: EdgeResponse) => {
       return Response.json({ message: 'ok' })
     })
@@ -127,7 +127,7 @@ including functions, for later use in the middleware chain.
 import { NextUse } from 'midnext'
 
 export async function middleware(request: NextRequest) {
-  return new NextUse(request)
+  return new NextUse({ request })
     .use((req, res) => {
       req.data.isBot = false
       req.data.printHello = () => console.log('hello')
