@@ -1,7 +1,8 @@
 import { next } from '@vercel/edge'
 import { pathToRegexp } from 'path-to-regexp'
 import type { Middleware, Middlewares, Props } from './types'
-import { EdgeRequest, EdgeResponse } from '../edge'
+import { EdgeResponse } from '../response'
+import { EdgeRequest } from '../request'
 
 export class NextUse<T, E = T extends FetchEvent ? T : never> {
 	private req: EdgeRequest

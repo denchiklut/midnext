@@ -1,4 +1,8 @@
 {
-  "*.{ts}": ["eslint --cache --fix", "prettier --write"],
+  "*.{ts}": [
+      "jest --passWithNoTests --findRelatedTests",
+      "eslint --cache --fix",
+      "prettier --write"
+  ],
   "*.{json}": ["prettier --write"]
 }

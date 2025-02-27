@@ -1,4 +1,5 @@
-import { EdgeRequest, EdgeResponse } from '../edge'
+import type { EdgeRequest } from '../request'
+import type { EdgeResponse } from '../response'
 
 export type MiddlewareResult = EdgeResponse | Response | void
 
