@@ -23,7 +23,7 @@ export class EdgeResponse<Body = unknown> extends Response {
 	}
 
 	public rewrite(destination: string | URL) {
-		return EdgeResponse.from(rewrite(destination))
+		return rewrite(destination)
 	}
 
 	public redirect(url: string | URL, init?: number | ResponseInit) {
@@ -37,7 +37,7 @@ export class EdgeResponse<Body = unknown> extends Response {
 		const headers = new Headers(initObj?.headers)
 		headers.set('Location', String(url))
 
-		return new EdgeResponse(null, { ...initObj, headers, status })
+		return new Response(null, { ...initObj, headers, status })
 	}
 
 	static from(response: Response) {

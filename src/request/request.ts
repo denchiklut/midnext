@@ -12,15 +12,12 @@ export class EdgeRequest extends Request {
 	constructor(input: URL | RequestInfo, init = {}) {
 		const url = typeof input !== 'string' && 'url' in input ? input.url : String(input)
 
-		if (input instanceof Request) {
-			super(input, init)
-		} else {
-			super(url, init)
-		}
+		if (input instanceof Request) super(input, init)
+		else super(url, init)
 
 		this[INTERNALS] = {
-			cookies: new RequestCookies(this.headers),
 			parsedUrl: new URL(url),
+			cookies: new RequestCookies(this.headers),
 			data: {} as EdgeRequest.Data
 		}
 	}

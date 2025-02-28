@@ -1,11 +1,7 @@
-/tmp
-/out-tsc
-
-/node_modules
-npm-debug.log*
+dist
+.idea
+coverage
+node_modules
 yarn-debug.log*
 yarn-error.log*
-/.pnp
-.pnp.js
 
-.vscode/*

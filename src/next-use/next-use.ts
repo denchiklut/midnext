@@ -7,8 +7,8 @@ import { EdgeRequest } from '../request'
 export class NextUse<T, E = T extends FetchEvent ? T : never> {
 	private req: EdgeRequest
 	private readonly res: EdgeResponse
-	private readonly event: E
 	private readonly middlewares: Middlewares<E> = []
+	private readonly event: E
 
 	constructor({ request, response = next(), event }: Props<E>) {
 		this.req = new EdgeRequest(request, request)
