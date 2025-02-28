@@ -6,7 +6,6 @@ describe('Request', () => {
 
 	it('should initialize with URL and default options', () => {
 		const req = new EdgeRequest(url)
-		req.data = undefined as never
 
 		expect(req.parsedUrl.href).toBe(url)
 		expect(req.cookies).toBeInstanceOf(RequestCookies)

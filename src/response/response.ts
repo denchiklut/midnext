@@ -2,24 +2,13 @@ import invariant from 'tiny-invariant'
 import { ResponseCookies } from '@edge-runtime/cookies'
 import { rewrite } from '@vercel/edge'
 
-const INTERNALS = Symbol('midnext response')
-
-export class EdgeResponse<Body = unknown> extends Response {
-	private [INTERNALS]: {
-		cookies: ResponseCookies
-		body?: Body
-	}
+export class EdgeResponse extends Response {
+	public readonly cookies: ResponseCookies
 
 	constructor(body?: BodyInit | null, init?: ResponseInit) {
 		super(body, init)
 
-		this[INTERNALS] = {
-			cookies: new ResponseCookies(this.headers)
-		}
-	}
-
-	get cookies() {
-		return this[INTERNALS].cookies
+		this.cookies = new ResponseCookies(this.headers)
 	}
 
 	public rewrite(destination: string | URL) {
