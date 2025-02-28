@@ -1,70 +1,66 @@
+import { next } from '@vercel/edge'
 import { NextUse } from './next-use'
-import { EdgeRequest } from '../request'
 
 describe('NextUse', () => {
 	it('should add middleware with use method', () => {
 		const instance = new NextUse({
-			request: new EdgeRequest('http://example.com'),
-			response: new Response()
-		}).use(jest.fn())
+			request: new Request('https://example.com')
+		})
+			.use(jest.fn())
+			.use(jest.fn())
 
-		expect(instance['middlewares']).toHaveLength(1)
+		expect(instance['middlewares']).toHaveLength(2)
+		expect(instance['res']).toBeInstanceOf(Response)
 	})
 
 	it('should run middleware that matches the path', async () => {
-		const request = new EdgeRequest('http://example.com/test')
-		const response = new Response()
+		const request = new Request('https://example.com/test')
+		const middleware1 = jest.fn()
+		const middleware2 = jest.fn()
 
-		const instance = new NextUse({ request, response })
-		const middleware = jest.fn()
-		instance.use('/test', middleware)
-		await instance.run()
+		await new NextUse({ request })
+			.use(jest.fn(() => next()))
+			.use('/test', middleware1)
+			.use('/abc', middleware2)
+			.run()
 
-		expect(middleware).toHaveBeenCalled()
+		expect(middleware1).toHaveBeenCalled()
+		expect(middleware2).not.toHaveBeenCalled()
 	})
 
 	it('should return a response if middleware returns one', async () => {
-		const request = new EdgeRequest('https://example.com/test')
-		const response = new Response()
-
-		const instance = new NextUse({ request, response })
-		const middleware = jest.fn(() => new Response('OK', { status: 200 }))
-
-		instance.use('/test', middleware)
-		const res = await instance.run()
+		const request = new Request('https://example.com/test-path')
+		const res = await new NextUse({ request })
+			.use('/test-path', () => new Response('Hello world!', { status: 200 }))
+			.run()
 
 		expect(res).toBeInstanceOf(Response)
-		expect(res).toHaveTextBody('OK')
+		expect(res).toHaveTextBody('Hello world!')
 		expect(res).toHaveStatus(200)
 	})
 
-	it('should rewrite the request if middleware sets rewrite header', async () => {
-		const request = new EdgeRequest('http://example.com')
-		const response = new Response()
+	it('should rewrite the request if middleware returns a rewrite', async () => {
+		const request = new Request('https://example.com')
 
-		const instance = new NextUse({ request, response })
-		const middleware = jest.fn(
-			() => new Response(null, { headers: { 'x-middleware-rewrite': 'http://example.com/new' } })
-		)
-
-		instance.use(middleware)
+		const instance = new NextUse({ request }).use((_req, res) => {
+			return res.rewrite('https://example.com/new')
+		})
 		await instance.run()
 
 		expect(instance['req'].parsedUrl.pathname).toBe('/new')
 	})
 
 	it('should return redirect response if middleware sets a redirect status', async () => {
-		const request = new EdgeRequest('http://example.com/redirect')
-		const response = new Response()
+		const request = new Request('https://example.com/redirect')
 
-		const instance = new NextUse({ request, response })
-		const middleware = jest.fn(() => new Response(null, { status: 301, headers: { Location: '/new-location' } }))
-
-		instance.use('/redirect', middleware)
-		const res = await instance.run()
+		const res = await new NextUse({ request })
+			.use('/redirect', (_req, res) => {
+				return res.redirect('https://example.com/new-location', 301)
+			})
+			.run()
 
 		expect(res).toBeInstanceOf(Response)
 		expect(res).toHaveStatus(301)
-		expect(res.headers.get('Location')).toBe('/new-location')
+		expect(res.headers.get('Location')).toBe('https://example.com/new-location')
 	})
 })

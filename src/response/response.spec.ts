@@ -6,7 +6,7 @@ jest.mock('@vercel/edge', () => ({
 }))
 
 describe('Response', () => {
-	test('should allow setting and retrieving cookies', () => {
+	it('should allow setting and retrieving cookies', () => {
 		const response = new EdgeResponse()
 		response.cookies.set('test', 'value')
 
@@ -14,28 +14,39 @@ describe('Response', () => {
 		expect(response.headers.get('set-cookie')).toBe('test=value; Path=/')
 	})
 
-	test('should rewrite response', () => {
+	it('should rewrite response', () => {
 		const destination = 'https://example.com'
 		new EdgeResponse().rewrite(destination)
 
 		expect(rewrite).toHaveBeenCalledWith(destination)
 	})
 
-	test('should redirect with custom status', () => {
+	it.each([
+		['numeric status', 302],
+		['object status', { status: 302 }]
+	])('should redirect with custom status (%s)', (_, status) => {
 		const redirectUrl = 'https://example.com'
-		const response = new EdgeResponse().redirect(redirectUrl, 302)
+		const response = new EdgeResponse().redirect(redirectUrl, status)
 
 		expect(response).toHaveStatus(302)
 		expect(response.headers.get('Location')).toBe(redirectUrl)
 	})
 
-	test('should throw error for invalid redirect status', () => {
+	it('should redirect with default status', () => {
+		const redirectUrl = 'https://example.com'
+		const response = new EdgeResponse().redirect(redirectUrl)
+
+		expect(response).toHaveStatus(307)
+		expect(response.headers.get('Location')).toBe(redirectUrl)
+	})
+
+	it('should throw error for invalid redirect status', () => {
 		expect(() => new EdgeResponse().redirect('https://example.com', 400)).toThrow(
 			'Failed to execute "redirect" on "response": Invalid status code'
 		)
 	})
 
-	test('should create EdgeResponse from an existing Response', () => {
+	it('should create EdgeResponse from an existing Response', () => {
 		const originalResponse = new Response('Hello', { status: 200 })
 		const edgeResponse = EdgeResponse.from(originalResponse)
 
