@@ -17,15 +17,18 @@ describe('NextUse', () => {
 		const request = new Request('https://example.com/test')
 		const middleware1 = jest.fn()
 		const middleware2 = jest.fn()
+		const middleware3 = jest.fn()
 
 		await new NextUse({ request })
 			.use(jest.fn(() => next()))
-			.use('/test', middleware1)
-			.use('/abc', middleware2)
+			.use(/.*/, middleware1)
+			.use('/test', middleware2)
+			.use('/abc', middleware3)
 			.run()
 
 		expect(middleware1).toHaveBeenCalled()
-		expect(middleware2).not.toHaveBeenCalled()
+		expect(middleware2).toHaveBeenCalled()
+		expect(middleware3).not.toHaveBeenCalled()
 	})
 
 	it('should return a response if middleware returns one', async () => {

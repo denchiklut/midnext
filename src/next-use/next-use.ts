@@ -16,9 +16,11 @@ export class NextUse<T, E = T extends FetchEvent ? T : never> {
 		this.event = event as E
 	}
 
-	public use(input: string | Middleware<E>, ...middlewares: Middleware<E>[]) {
-		const regexp = typeof input === 'function' ? /.*/ : pathToRegexp(input).regexp
-		const middlewareList = typeof input === 'function' ? [input, ...middlewares] : middlewares
+	public use(input: string | RegExp | Middleware<E>, ...middlewares: Middleware<E>[]) {
+		const isMiddleware = typeof input === 'function'
+		const regexp = isMiddleware ? /.*/ : input instanceof RegExp ? input : pathToRegexp(input).regexp
+		const middlewareList = isMiddleware ? [input, ...middlewares] : middlewares
+
 		this.middlewares.push(...middlewareList.map(middleware => ({ regexp, middleware })))
 
 		return this
