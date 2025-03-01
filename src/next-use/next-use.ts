@@ -32,13 +32,10 @@ export class NextUse<T, E = T extends FetchEvent ? T : never> {
 
 			if (!(res instanceof Response)) continue
 
-			const isRedirect = [301, 302, 303, 307, 308].includes(res.status)
 			const rewrite = res.headers.get('x-middleware-rewrite')
 			const isNext = res.headers.has('x-middleware-next')
 
 			if (isNext) continue
-
-			if (isRedirect) return res
 
 			if (rewrite) {
 				const req = new EdgeRequest(rewrite, this.req)
