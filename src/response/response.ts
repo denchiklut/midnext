@@ -25,6 +25,7 @@ export class EdgeResponse extends Response {
 		const initObj = typeof init === 'object' ? init : {}
 		const headers = new Headers(initObj?.headers)
 		headers.set('Location', String(url))
+		headers.delete('x-middleware-next')
 
 		return new Response(null, { ...initObj, headers, status })
 	}

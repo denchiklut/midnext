@@ -46,7 +46,6 @@ export class NextUse<T, E = T extends FetchEvent ? T : never> {
 				this.req = req
 				this.res.headers.set('x-middleware-rewrite', rewrite)
 			} else {
-				res.headers.delete('x-middleware-next')
 				return res
 			}
 		}
