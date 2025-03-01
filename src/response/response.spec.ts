@@ -2,7 +2,7 @@ import { rewrite } from '@vercel/edge'
 import { EdgeResponse } from './response'
 
 jest.mock('@vercel/edge', () => ({
-	rewrite: jest.fn(() => new Response(null, { status: 200 }))
+	rewrite: jest.fn()
 }))
 
 describe('Response', () => {
@@ -47,11 +47,11 @@ describe('Response', () => {
 	})
 
 	it('should create EdgeResponse from an existing Response', () => {
-		const originalResponse = new Response('Hello', { status: 200 })
+		const originalResponse = new Response('Hello world!', { status: 200 })
 		const edgeResponse = EdgeResponse.from(originalResponse)
 
 		expect(edgeResponse).toBeInstanceOf(EdgeResponse)
+		expect(edgeResponse).toHaveTextBody('Hello world!')
 		expect(edgeResponse).toHaveStatus(200)
-		expect(edgeResponse).toHaveTextBody('Hello')
 	})
 })
