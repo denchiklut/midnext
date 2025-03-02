@@ -83,7 +83,12 @@ import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
 export async function middleware(request: Request) {
   return new NextUse({ request })
     .use((req: EdgeRequest, res: EdgeResponse) => {
-      return res.redirect('http://example.com')
+      res.cookies.set('test', 'abc')
+      
+      return res.redirect('https://example.com', {
+        headers: res.headers,
+        status: 302
+      })
     })
     .use((req, res) => {
       // This middleware won't be executed since the redirect was returned above

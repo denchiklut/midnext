@@ -1,4 +1,3 @@
-import invariant from 'tiny-invariant'
 import { ResponseCookies } from '@edge-runtime/cookies'
 import { rewrite } from '@vercel/edge'
 
@@ -17,10 +16,9 @@ export class EdgeResponse extends Response {
 
 	public redirect(url: string | URL, init?: number | ResponseInit) {
 		const status = typeof init === 'number' ? init : (init?.status ?? 307)
-		invariant(
-			[301, 302, 303, 307, 308].includes(status),
-			'Failed to execute "redirect" on "response": Invalid status code'
-		)
+		if (![301, 302, 303, 307, 308].includes(status)) {
+			throw new Error('Failed to execute "redirect" on "response": Invalid status code')
+		}
 
 		const initObj = typeof init === 'object' ? init : {}
 		const headers = new Headers(initObj?.headers)
