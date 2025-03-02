@@ -1,8 +1,10 @@
 ## Midnext
 
-[![npm version](https://img.shields.io/npm/v/midnext.svg?style=for-the-badge)](https://www.npmjs.com/package/midnext)
-[![npm downloads](https://img.shields.io/npm/dm/midnext.svg?style=for-the-badge)](https://www.npmjs.com/package/midnext)
-[![Stars](https://img.shields.io/github/stars/denchiklut/midnext?style=for-the-badge)](https://github.com/denchiklut/midnext)
+![NPM Version](https://img.shields.io/npm/v/midnext)
+![NPM Downloads](https://img.shields.io/npm/dw/midnext)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/midnext)
+![NPM License](https://img.shields.io/npm/l/midnext)
+
 
 `Midnext` is a library that enhances the middleware development experience in Next.js, offering support with a syntax
 similar to [express](http://npm.im/express) / [connect](https://www.npmjs.com/package/connect).
