@@ -40,8 +40,13 @@ export class NextUse<T, E = T extends FetchEvent ? T : never> {
 			if (isNext) continue
 
 			if (rewrite) {
-				const req = new EdgeRequest(rewrite, this.req)
-				req.data = this.req.data
+				const req = new EdgeRequest(rewrite, this.req) as never
+
+				for (const key of Object.keys(this.req)) {
+					if (!(key in req)) {
+						req[key] = (this.req as never)[key]
+					}
+				}
 
 				this.req = req
 				this.res.headers.set('x-middleware-rewrite', rewrite)

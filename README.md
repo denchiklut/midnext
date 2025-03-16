@@ -124,7 +124,7 @@ export const config = {}
 
 ## Sharing Data
 
-To share data between multiple middleware, use the request.data property. This enables storing various types of data,
+To share data between multiple middleware, u can add custom properties the request or response objects. This enables storing various types of data,
 including functions, for later use in the middleware chain.
 
 ```typescript
@@ -134,12 +134,12 @@ import { NextUse } from 'midnext'
 export async function middleware(request: NextRequest) {
   return new NextUse({ request })
     .use((req, res) => {
-      req.data.isBot = false
-      req.data.printHello = () => console.log('hello')
+      req.isBot = false
+      req.printHello = () => console.log('hello')
     })
     .use(req => {
-      console.log(req.data.isBot)
-      req.data.printHello()
+      console.log(req.isBot)
+      req.printHello()
     })
     .run()
 }
@@ -150,9 +150,9 @@ export const config = {}
 Optionally, you can type the data field on request objects for TypeScript safety:
 
 ```typescript
-declare module 'midnext' {
-  namespace EdgeRequest {
-    interface Data {
+declare global {
+  namespace Midnext {
+    interface EdgeRequest {
       isBot: boolean
       printHello: () => void
     }
@@ -173,7 +173,6 @@ middleware functions.
   Below, we list only the additional properties introduced by midnext.
 
 ### NextUse Properties
-
 | Constructor                                                                | Description                                                                                                                      |
 |----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | new NextUse({ request: Request, response?: Response, event?: FetchEvent }) | Initializes a new instance of `NextUse`, wrapping the incoming request in an `EdgeRequest` and setting an initial `EdgeResponse` |
@@ -184,15 +183,12 @@ middleware functions.
 | run()                                                              | Executes the middleware stack in sequence, handling redirects, rewrites, and response finalization.                       |
 
 ### EdgeRequest Properties
-
 | Property  | Description                                                                                                |
 |-----------|------------------------------------------------------------------------------------------------------------|
 | cookies   | Manages request cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |
 | parsedUrl | Provides the parsed URL object of the request.                                                             |
-| data      | Stores shared data across middleware functions. Can hold any type, including functions.                    |
 
 ### EdgeResponse Properties
-
 | Property | Description                                                                                                 |
 |----------|-------------------------------------------------------------------------------------------------------------|
 | cookies  | Manages response cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |

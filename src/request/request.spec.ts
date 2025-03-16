@@ -1,6 +1,14 @@
 import { RequestCookies } from '@edge-runtime/cookies'
 import { EdgeRequest } from './request'
 
+declare global {
+	namespace Midnext {
+		interface EdgeRequest {
+			data?: { user: string }
+		}
+	}
+}
+
 describe('Request', () => {
 	const url = 'https://example.com/path?query=1'
 
@@ -9,7 +17,7 @@ describe('Request', () => {
 
 		expect(req.parsedUrl.href).toBe(url)
 		expect(req.cookies).toBeInstanceOf(RequestCookies)
-		expect(req.data).toEqual({})
+		expect(req.data).toBeFalsy()
 	})
 
 	it('should initialize with an existing Request object', () => {

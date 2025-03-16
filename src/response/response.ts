@@ -21,7 +21,7 @@ export class EdgeResponse extends Response {
 		}
 
 		const initObj = typeof init === 'object' ? init : {}
-		const headers = new Headers(initObj?.headers)
+		const headers = new Headers(initObj.headers)
 		headers.set('Location', String(url))
 		headers.delete('x-middleware-next')
 
@@ -32,3 +32,11 @@ export class EdgeResponse extends Response {
 		return new EdgeResponse(response.body, response)
 	}
 }
+
+declare global {
+	namespace Midnext {
+		interface EdgeResponse {}
+	}
+}
+
+export interface EdgeResponse extends Midnext.EdgeResponse {}
