@@ -158,6 +158,8 @@ declare global {
     }
   }
 }
+
+export {}
 ```
 
 ## API
