@@ -4,7 +4,8 @@ import { EdgeRequest } from './request'
 declare global {
 	namespace Midnext {
 		interface EdgeRequest {
-			data?: { user: string }
+			nonce: string
+			user: { email: string }
 		}
 	}
 }
@@ -17,7 +18,6 @@ describe('Request', () => {
 
 		expect(req.parsedUrl.href).toBe(url)
 		expect(req.cookies).toBeInstanceOf(RequestCookies)
-		expect(req.data).toBeFalsy()
 	})
 
 	it('should initialize with an existing Request object', () => {
@@ -29,11 +29,12 @@ describe('Request', () => {
 	})
 
 	it('should allow setting and getting data', () => {
-		const req = new EdgeRequest(url)
-		const testData = { user: 'test-user' }
-		req.data = testData
+		const req = new EdgeRequest(url, { nonce: 'abc' })
+		const user = { email: 'test-user' }
+		req.user = user
 
-		expect(req.data).toEqual(testData)
+		expect(req.user).toEqual(user)
+		expect(req.nonce).toEqual('abc')
 	})
 
 	it('should handle request cookies', () => {

@@ -12,6 +12,15 @@ export class EdgeRequest extends Request {
 
 		this.parsedUrl = new URL(url)
 		this.cookies = new RequestCookies(this.headers)
+		this.merge(init)
+	}
+
+	private merge(init: Record<string, unknown>) {
+		for (const key of Object.keys(init)) {
+			if (!(key in this)) {
+				this[key as keyof this] = (init as never)[key]
+			}
+		}
 	}
 }
 
