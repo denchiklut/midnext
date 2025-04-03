@@ -2,15 +2,15 @@ import { ResponseCookies } from '@edge-runtime/cookies'
 import { rewrite, type ExtraResponseInit } from '@vercel/edge'
 
 export class EdgeResponse extends Response {
+	/**
+	 * Provides access to response cookies.
+	 * Uses `@edge-runtime/cookies` to manage Set-Cookie headers.
+	 */
 	public readonly cookies: ResponseCookies
 
 	constructor(body?: BodyInit | null, init?: ResponseInit) {
 		super(body, init)
 
-		/**
-		 * Provides access to response cookies.
-		 * Uses `@edge-runtime/cookies` to manage Set-Cookie headers.
-		 */
 		this.cookies = new ResponseCookies(this.headers)
 	}
 

@@ -1,7 +1,16 @@
 import { RequestCookies } from '@edge-runtime/cookies'
 
 export class EdgeRequest extends Request {
+	/**
+	 * Provides access to request cookies.
+	 * Uses `@edge-runtime/cookies` to manage Cookie headers.
+	 */
 	public readonly cookies: RequestCookies
+
+	/**
+	 * Parsed URL object for the request.
+	 * This provides direct access to the URL properties by using the standard JavaScript `URL` API.
+	 */
 	public readonly parsedUrl: URL
 
 	constructor(input: URL | RequestInfo, init = {}) {
