@@ -54,8 +54,8 @@ rewritten pathname.
 import { NextUse } from 'midnext'
 import join from 'url-join'
 
-export async function middleware(request: Request) {
-  return new NextUse({ request })
+export async function middleware(request: Request, event: FetchEvent) {
+  return new NextUse({ request, event })
     .use((req, res) => {
       const url = new URL(req.url)
       url.pathname = join('test', url.pathname)
@@ -80,8 +80,8 @@ You can also send rewrite as a response (this will stop further middleware execu
 import { NextUse } from 'midnext'
 import join from 'url-join'
 
-export async function middleware(request: Request) {
-  return new NextUse({ request })
+export async function middleware(request: Request, event: FetchEvent) {
+  return new NextUse({ request, event })
     .use((request, response) => {
       const url = new URL(request.url)
       url.pathname = join('test', url.pathname)
@@ -89,7 +89,7 @@ export async function middleware(request: Request) {
       return response.sendRewrite(url, { request, headers: response.headers })
     })
     .use((request, response) => {
-      // This middleware won't be executed since the redirect was returned above
+      // This middleware won't be executed since the rewrite was returned as a response.
     })
     .run()
 }
@@ -106,8 +106,8 @@ Returning `res.redirect` will immediately stop further middleware execution and 
 // middleware.ts
 import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
 
-export async function middleware(request: Request) {
-  return new NextUse({ request })
+export async function middleware(request: Request, event: FetchEvent) {
+  return new NextUse({ request, event })
     .use((req: EdgeRequest, res: EdgeResponse) => {
       res.cookies.set('test', 'abc')
       
@@ -134,8 +134,8 @@ execution.
 // middleware.ts
 import { NextUse, EdgeRequest, EdgeResponse } from 'midnext'
 
-export async function middleware(request: Request) {
-  return new NextUse({ request })
+export async function middleware(request: Request, event: FetchEvent) {
+  return new NextUse({ request, event })
     .use((req: EdgeRequest, res: EdgeResponse) => {
       return Response.json({ message: 'ok' })
     })
@@ -157,8 +157,8 @@ including functions, for later use in the middleware chain.
 // middleware.ts
 import { NextUse } from 'midnext'
 
-export async function middleware(request: NextRequest) {
-  return new NextUse({ request })
+export async function middleware(request: NextRequest, event: FetchEvent) {
+  return new NextUse({ request, event })
     .use((req, res) => {
       req.isBot = false
       req.printHello = () => console.log('hello')
@@ -217,8 +217,9 @@ middleware functions.
 | parsedUrl | Provides the parsed URL object of the request.                                                             |
 
 ### EdgeResponse Properties
-| Property | Description                                                                                                 |
-|----------|-------------------------------------------------------------------------------------------------------------|
-| cookies  | Manages response cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |
-| rewrite  | Rewrites the request URL and `continues` middleware execution with the updated request.                     |
-| redirect | Redirects to a new URL and halts further middleware execution.                                              |
+| Property    | Description                                                                                                 |
+|-------------|-------------------------------------------------------------------------------------------------------------|
+| cookies     | Manages response cookies using [@edge-runtime/cookies](https://www.npmjs.com/package/@edge-runtime/cookies) |
+| rewrite     | Rewrites the request URL and `continues` middleware execution with the updated request.                     |
+| sendRewrite | Rewrites the request URL and `prevents` further middleware execution.                                       |
+| redirect    | Redirects to a new URL and halts further middleware execution.                                              |
