@@ -72,6 +72,32 @@ export async function middleware(request: Request) {
 export const config = {}
 ```
 
+### SendRewrite
+You can also send rewrite as a response (this will stop further middleware execution).
+
+```typescript
+// middleware.ts
+import { NextUse } from 'midnext'
+import join from 'url-join'
+
+export async function middleware(request: Request) {
+  return new NextUse({ request })
+    .use((request, response) => {
+      const url = new URL(request.url)
+      url.pathname = join('test', url.pathname)
+
+      return response.sendRewrite(url, { request, headers: response.headers })
+    })
+    .use((request, response) => {
+      // This middleware won't be executed since the redirect was returned above
+    })
+    .run()
+}
+
+export const config = {}
+```
+
+
 ## Redirects
 
 Returning `res.redirect` will immediately stop further middleware execution and perform a redirect.

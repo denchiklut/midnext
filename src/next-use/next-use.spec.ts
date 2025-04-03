@@ -2,9 +2,12 @@ import { next } from '@vercel/edge'
 import { NextUse } from './next-use'
 
 describe('NextUse', () => {
+	const event = { waitUntil: jest.fn() } as unknown as FetchEvent
+
 	it('should add middleware with use method', () => {
 		const instance = new NextUse({
-			request: new Request('https://example.com')
+			request: new Request('https://example.com'),
+			event
 		})
 			.use(jest.fn())
 			.use(jest.fn())
@@ -19,7 +22,7 @@ describe('NextUse', () => {
 		const middleware2 = jest.fn()
 		const middleware3 = jest.fn()
 
-		await new NextUse({ request })
+		await new NextUse({ request, event })
 			.use(jest.fn(() => next()))
 			.use(/.*/, middleware1)
 			.use('/test', middleware2)
@@ -32,20 +35,31 @@ describe('NextUse', () => {
 	})
 
 	it('should return a response if middleware returns one', async () => {
-		const request = new Request('https://example.com/test-path')
-		const res = await new NextUse({ request })
-			.use('/test-path', () => new Response('Hello world!', { status: 200 }))
-			.run()
+		const request = new Request('https://example.com')
+		const res = await new NextUse({ request, event }).use(() => new Response('Hello world!', { status: 200 })).run()
 
 		expect(res).toBeInstanceOf(Response)
 		expect(res).toHaveTextBody('Hello world!')
 		expect(res).toHaveStatus(200)
 	})
 
+	it('should handle sendRewrite properly', async () => {
+		const request = new Request('https://example.com')
+		const middleware = jest.fn()
+		const res = await new NextUse({ request, event })
+			.use((_, res) => res.sendRewrite('/test'))
+			.use(middleware)
+			.run()
+
+		expect(middleware).not.toHaveBeenCalled()
+		expect(res.headers.get('x-middleware-rewrite')).toBe('/test')
+		expect(res.headers.has('x-middleware-next')).toBeFalsy()
+	})
+
 	it('should rewrite the request if middleware returns a rewrite', async () => {
 		const request = new Request('https://example.com')
 
-		const instance = new NextUse({ request }).use((_req, res) => {
+		const instance = new NextUse({ request, event }).use((_req, res) => {
 			return res.rewrite('https://example.com/new')
 		})
 		await instance.run()
@@ -56,7 +70,7 @@ describe('NextUse', () => {
 	it('should return redirect response if middleware sets a redirect status', async () => {
 		const request = new Request('https://example.com/redirect')
 
-		const res = await new NextUse({ request })
+		const res = await new NextUse({ request, event })
 			.use('/redirect', (_req, res) => {
 				return res.redirect('https://example.com/new-location', 301)
 			})

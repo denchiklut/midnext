@@ -1,5 +1,5 @@
 import { ResponseCookies } from '@edge-runtime/cookies'
-import { rewrite } from '@vercel/edge'
+import { rewrite, type ExtraResponseInit } from '@vercel/edge'
 
 export class EdgeResponse extends Response {
 	public readonly cookies: ResponseCookies
@@ -7,11 +7,30 @@ export class EdgeResponse extends Response {
 	constructor(body?: BodyInit | null, init?: ResponseInit) {
 		super(body, init)
 
+		/**
+		 * Provides access to response cookies.
+		 * Uses `@edge-runtime/cookies` to manage Set-Cookie headers.
+		 */
 		this.cookies = new ResponseCookies(this.headers)
 	}
 
+	/**
+	 * Creates a rewrite response to the specified destination.
+	 * Unlike `sendRewrite`, this does not signal middleware to stop further execution.
+	 */
 	public rewrite(destination: string | URL) {
 		return rewrite(destination)
+	}
+
+	/**
+	 * Creates a rewrite response that signals middleware to stop further execution.
+	 */
+	public sendRewrite(destination: string | URL, init?: ExtraResponseInit) {
+		const headers = new Headers(init?.headers)
+		headers.set('x-midnext-send', '1')
+		headers.delete('x-middleware-next')
+
+		return rewrite(destination, { ...init, headers })
 	}
 
 	public redirect(url: string | URL, init?: number | ResponseInit) {
