@@ -49,6 +49,9 @@ export class NextUse {
 			}
 		}
 
-		return next({ request: this.req, headers: this.res.headers })
+		const res = next({ request: this.req, headers: this.res.headers })
+		if (res.headers.has('x-middleware-rewrite')) res.headers.delete('x-middleware-next')
+
+		return res
 	}
 }
