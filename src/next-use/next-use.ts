@@ -39,10 +39,9 @@ export class NextUse {
 
 			if (isNext) continue
 
-			// If rewrite is returned, stop execution and return the response
+			// If a response is returned (including rewrites), stop execution and return it
 			if (rewrite) {
 				res.headers.delete('x-midnext-send')
-				return res
 			}
 
 			return res
