@@ -36,17 +36,16 @@ export class NextUse {
 
 			const rewrite = res.headers.get('x-middleware-rewrite')
 			const isNext = res.headers.has('x-middleware-next')
-			const isSend = res.headers.has('x-midnext-send')
 
 			if (isNext) continue
 
-			if (rewrite && !isSend) {
-				this.req = new EdgeRequest(rewrite, this.req)
-				this.res.headers.set('x-middleware-rewrite', rewrite)
-			} else {
+			// If rewrite is returned, stop execution and return the response
+			if (rewrite) {
 				res.headers.delete('x-midnext-send')
 				return res
 			}
+
+			return res
 		}
 
 		const res = next({ request: this.req, headers: this.res.headers })

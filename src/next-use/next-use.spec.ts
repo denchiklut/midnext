@@ -56,15 +56,20 @@ describe('NextUse', () => {
 		expect(res.headers.has('x-middleware-next')).toBeFalsy()
 	})
 
-	it('should rewrite the request if middleware returns a rewrite', async () => {
+	it('should stop execution and return rewrite response when middleware returns rewrite', async () => {
 		const request = new Request('https://example.com')
+		const middleware = jest.fn()
 
-		const instance = new NextUse({ request, event }).use((_req, res) => {
-			return res.rewrite('https://example.com/new')
-		})
-		await instance.run()
+		const res = await new NextUse({ request, event })
+			.use((_req, res) => {
+				return res.rewrite('https://example.com/new')
+			})
+			.use(middleware)
+			.run()
 
-		expect(instance['req'].parsedUrl.pathname).toBe('/new')
+		expect(middleware).not.toHaveBeenCalled()
+		expect(res.headers.get('x-middleware-rewrite')).toBe('https://example.com/new')
+		expect(res.headers.has('x-middleware-next')).toBeFalsy()
 	})
 
 	it('should return redirect response if middleware sets a redirect status', async () => {
